@@ -4,7 +4,7 @@ import socket
 def clientSocket():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((socket.gethostname(), 33324))
+    s.connect((socket.gethostname(), 33326))
     complete_info = ''
 
     while True:
@@ -16,6 +16,6 @@ def clientSocket():
             if(len(msg) <= 0 or "peos" in msg.decode("utf-8")):
                 break
             complete_info += msg.decode("utf-8")
-            print(complete_info)
+    print(complete_info)
 
 clientSocket()

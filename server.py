@@ -9,7 +9,7 @@ class Server():
         self.listen = True
         self.BUFFER_SIZE = 10
         self.filename = "log.txt"
-        self.filesize = os.path.getsize(self.filename) + 1
+        self.filesize = os.path.getsize(self.filename)
         self.lock = lock
         self.serverThread = Thread(target = self.serverSocket)
         self.serverThread.start()
@@ -18,7 +18,7 @@ class Server():
     def serverSocket(self):
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((socket.gethostname(), 33324))
+        s.bind((socket.gethostname(), 33326))
         s.listen(5)
         self.flag = 0
 
