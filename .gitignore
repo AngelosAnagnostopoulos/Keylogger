@@ -1,0 +1,8 @@
+# Ignore virtual enviroment folder
+keylogger-env
+
+# Ignore the logging files
+*.txt
+
+# Ignore files related to APIs
+.env
