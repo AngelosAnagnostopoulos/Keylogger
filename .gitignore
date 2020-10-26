@@ -3,6 +3,7 @@ keylogger-env
 
 # Ignore the logging files
 *.txt
+!requirements.txt
 
 # Ignore files related to APIs
 .env
