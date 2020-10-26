@@ -4,7 +4,7 @@ import socket
 def clientSocket():
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((socket.gethostname(), 33323))
+    s.connect((socket.gethostname(), 33324))
     complete_info = ''
 
     while True:

