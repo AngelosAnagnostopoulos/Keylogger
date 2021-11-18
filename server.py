@@ -1,5 +1,7 @@
-import socket,os,logging,smtplib
-from threading import Thread, Lock
+import sys,socket,os,time,logging,smtplib
+from threading import Thread
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -9,15 +11,13 @@ from email import encoders
 
 class Server():
 
-    def __init__(self,lock):
+    def __init__(self):
 
         self.listen = True
         self.BUFFER_SIZE = 10
         self.filename = "log.txt"
         self.filesize = os.path.getsize(self.filename)
-        self.lock = lock
-        self.serverThread = Thread(target = self.serverSocket)
-        self.serverThread.start()
+        self.sched = BackgroundScheduler(timezone="Europe/Athens")
 
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
@@ -27,59 +27,43 @@ class Server():
         file_handler.setFormatter(formatter)
 
         self.logger.addHandler(file_handler)
-                    
+        
+        self.receiver_name = str(sys.argv[1])
+        self.serverSocket()
+
     
     def serverSocket(self):
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        HOST = '127.0.0.1'
-        PORT = 12346
-        s.bind((HOST, PORT))
-        self.logger.info("Bound into host {}, on port {}\n".format(HOST,PORT))
+        CLIENT = '127.0.0.1'
+        PORT = 22344
+        s.bind((CLIENT, PORT))
+        self.logger.info("Bound into host {}, on port {}\n".format(CLIENT,PORT))
         
         s.listen(5)
-        self.flag = 0
-
+        self.clients = 0
+        self.sched.add_job(self.send_email, 'interval', minutes = 120)
+        self.sched.start()
+        
         while True:
             if self.listen == False:
                 break
             try:
                 clt, addr = s.accept()
-               	self.logger.info("Connected to: {}\n{}\n".format(clt,addr))
-                flag = 1
+                self.logger.info("Recieved connection: {} {}".format(clt,addr))
+                self.clients += 1
             except ValueError:
                 print("Error in {} {}".format(clt,addr))
             else:
-                print("Connected to: {}".format(addr))
-                sendingThread = Thread(target = self.send_file, args = (clt,))
-                sendingThread.start()
-
-        if flag == 1:
-            s.close()
-
-    
-    def send_file(self,clt):
-
-        self.lock.acquire()
-        with open(self.filename, "r") as f:
-            assert self.BUFFER_SIZE > 0
-            total = 0
-            while True:
-                bytes_read = f.read(self.BUFFER_SIZE)
-                total += len(bytes_read)
-                if bytes_read == '':
-                    break
-                clt.send(bytes(bytes_read,"utf-8"))
-                self.show_percentage(total/self.filesize)
-            clt.send(bytes("STOPSEQUENCE","utf-8"))
-        f.close()
-        self.lock.release()
+                print("{} is connected".format(addr))
+            
 
 
     def send_email(self):
-        sender_addr = 'aggelosanagnostopoulos1@gmail.com'
-        sender_pass = 'eimaigamatos123'
-        receiver_addr = 'up1066593@upnet.gr'
+
+        sender_addr = 'ujiosdfghnkl'
+        sender_pass = 'safepass123'
+        receiver_addr = self.receiver_name + '@gmail.com'
         
         content = ''
         message = MIMEMultipart()
@@ -98,22 +82,14 @@ class Server():
         session.starttls()
         session.login(sender_addr,sender_pass)
         text = message.as_string()
+        
+        print("Sending email now...")
         session.sendmail(sender_addr,receiver_addr,text)
         session.quit()
- 
-
-    def show_percentage(self,p):
-
-        chops = 40
-        if p > 1 or p < 0:
-            print()
-            return
-        if p > 0.0:
-            print('\r', end = '')
-
-        s = int(p * chops)
-        print('[{}]  {:5.2f}%'.format('=' * max(0, s-1) + ('>' if s > 0 else '') + ' ' * (chops - s), p*100), end = ('\n' if p == 1.0 else ''))
+        print("Email sent.")
 
 
     def kill(self):
         self.listen = False
+
+myServer = Server()

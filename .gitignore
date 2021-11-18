@@ -2,10 +2,10 @@
 keylogger-env
 Pipfile
 __pycache__
+
 # Ignore the logging files
 *.log
 *.txt
-!requirements.txt
 
 # Ignore files related to APIs
 .env

