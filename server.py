@@ -1,5 +1,10 @@
-import socket,os
+import socket,os,logging,smtplib
 from threading import Thread, Lock
+
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 
 class Server():
@@ -14,11 +19,24 @@ class Server():
         self.serverThread = Thread(target = self.serverSocket)
         self.serverThread.start()
 
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+            
+        formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
+        file_handler = logging.FileHandler('information.log')
+        file_handler.setFormatter(formatter)
 
+        self.logger.addHandler(file_handler)
+                    
+    
     def serverSocket(self):
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((socket.gethostname(), 33326))
+        HOST = '127.0.0.1'
+        PORT = 12346
+        s.bind((HOST, PORT))
+        self.logger.info("Bound into host {}, on port {}\n".format(HOST,PORT))
+        
         s.listen(5)
         self.flag = 0
 
@@ -27,6 +45,7 @@ class Server():
                 break
             try:
                 clt, addr = s.accept()
+               	self.logger.info("Connected to: {}\n{}\n".format(clt,addr))
                 flag = 1
             except ValueError:
                 print("Error in {} {}".format(clt,addr))
@@ -38,7 +57,7 @@ class Server():
         if flag == 1:
             s.close()
 
-
+    
     def send_file(self,clt):
 
         self.lock.acquire()
@@ -52,10 +71,36 @@ class Server():
                     break
                 clt.send(bytes(bytes_read,"utf-8"))
                 self.show_percentage(total/self.filesize)
-            clt.send(bytes("peos","utf-8"))
+            clt.send(bytes("STOPSEQUENCE","utf-8"))
         f.close()
         self.lock.release()
 
+
+    def send_email(self):
+        sender_addr = 'aggelosanagnostopoulos1@gmail.com'
+        sender_pass = 'eimaigamatos123'
+        receiver_addr = 'up1066593@upnet.gr'
+        
+        content = ''
+        message = MIMEMultipart()
+        message['From'] = sender_addr
+        message['To'] = receiver_addr
+        message['Subject'] = 'Super secret information:'
+        message.attach(MIMEText(content, 'plain'))
+        attach_file = open(self.filename, 'rb')
+        payload = MIMEBase('application', 'octate-stream')
+        payload.set_payload((attach_file).read())
+        encoders.encode_base64(payload)
+        payload.add_header('Content-Decomposition', 'attachment', filename=self.filename)
+        message.attach(payload)
+
+        session = smtplib.SMTP('smtp.gmail.com',587)
+        session.starttls()
+        session.login(sender_addr,sender_pass)
+        text = message.as_string()
+        session.sendmail(sender_addr,receiver_addr,text)
+        session.quit()
+ 
 
     def show_percentage(self,p):
 

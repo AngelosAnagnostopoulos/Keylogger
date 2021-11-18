@@ -1,7 +1,9 @@
 # Ignore virtual enviroment folder
 keylogger-env
-
+Pipfile
+__pycache__
 # Ignore the logging files
+*.log
 *.txt
 !requirements.txt
 
