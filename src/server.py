@@ -42,13 +42,13 @@ class Server():
         #Server listening for clients
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         CLIENT = '127.0.0.1'
-        PORT = 22344
+        PORT = 22343
         s.bind((CLIENT, PORT))
         self.logger.info("Bound into host {}, on port {}\n".format(CLIENT,PORT))
         
         s.listen(5)
         #Send information to a recepient every two hours
-        self.sched.add_job(self.send_email, 'interval', minutes = 120)
+        self.sched.add_job(self.send_email, 'interval', seconds = 120)
         self.sched.start()
         
         while True:
@@ -93,10 +93,10 @@ class Server():
             session.login(sender_addr,sender_pass)
             text = message.as_string()
             
-            logger.info("Sending email now...")
+            self.logger.info("Sending email now...")
             session.sendmail(sender_addr,receiver_addr,text)
             session.quit()
-            logger.info("Email sent.")
+            self.logger.info("Email sent.")
         
         except FileNotFoundError:
             print("No file to mail. Exiting...")

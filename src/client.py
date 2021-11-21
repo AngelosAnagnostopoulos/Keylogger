@@ -17,7 +17,7 @@ class Client():
 
         clt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         SERVER = '127.0.0.1'
-        PORT = 22344
+        PORT = 22343
         clt.connect((SERVER, PORT))
         self.sched.add_job(self.send_file, 'interval', args=(clt,), seconds = 3)
         self.sched.start()

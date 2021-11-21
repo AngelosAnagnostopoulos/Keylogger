@@ -20,6 +20,6 @@ A file will then be e-mailed to a chosen recepient.
 python3 server.py angelos (Will email angelos@gmail.com)
 
 (Other cmd win)
-python3 client.py
+python3 main.py
 
 The application handles the rest after that.
