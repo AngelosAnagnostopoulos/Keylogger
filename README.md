@@ -23,3 +23,8 @@ python3 server.py angelos (Will email angelos@gmail.com)
 python3 main.py
 
 The application handles the rest after that.
+
+Known Bugs:
+
+> PyInput does not accept input when inside a terminal window.
+> PyInput only understands english and will try to change characters from other languages to match those of the english alphabet with varying degrees of success.
