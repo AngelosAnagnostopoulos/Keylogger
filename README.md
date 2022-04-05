@@ -1,5 +1,6 @@
 # Keylogger
-*Author: Angelos Anagnostopoulos*
+
+## Author: Angelos Anagnostopoulos
 
 A Python3.x keylogger virus with pyinput.
 Localhost address is used for all ip needs, along with a random port number.
@@ -11,9 +12,9 @@ a good learning experience.
 
 ### Usage:
 
-On two seperate command line windows, run server.py *email-name (@gmail.com is added automatically)* on one and client.py on the other.
+On two seperate command line instances, run server.py _email-name (@gmail.com is added automatically)_ on one and client.py on the other.
 (Server has to open first obviously to be listening for connections)
-A file will then be e-mailed to a chosen recepient.
+A file will then be e-mailed to a chosen recepient. (demo@gmail.com by default)
 
 ### Example:
 
